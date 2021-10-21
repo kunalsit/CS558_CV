@@ -4,6 +4,70 @@ import itertools
 import math
 import cv2
 
+
+def apply_filter(filter, arr):
+    try:
+        """
+        This method convolves an image with a given kernel.
+        Parameters
+        ----------
+        filter:array, Required
+    
+        arr: array, Required
+    
+        return tuple 
+        """
+    
+        canvas = updated_arr(arr)
+        img = updated_arr(arr)
+        for i in range(1, len(arr) - 1):
+            for j in range(1, len(arr[i]) - 1):
+                pos = 0
+                for rows in range(len(filter)):
+                    for columns in range(len(filter[rows])):
+                        x = rows - (len(filter) // 2)
+                        y = columns - (len(filter[rows]) // 2)
+                        pos += filter[rows][columns] * arr[i + x][j + y]
+                canvas[i][j] = pos
+    
+                img[i][j] = 0 if pos < 0 else  255 if pos > 255 else  pos
+        return (canvas, img)
+    except:
+        print("error in Apply_filter fn")
+
+
+def overlay_image(item1, item2, bg = False):
+    try:
+        """
+        This method used to overlays images based on gradient value.
+        Parameters
+        ----------
+        item1:array , Required
+    
+        item2:array, Required
+    
+        bg:boolean, Optional
+    
+        return tuple of item1 and image
+        """
+        img = item1.copy()
+        for i in range(len(item1)):
+            for j in range(len(item1[i])):
+                if not bg:
+                    val = math.sqrt(item1[i][j] ** 2 + item2[i][j] ** 2)
+                    item1[i][j] = val
+                    img[i][j] = 0 if val < 0 else 255 if val > 255 else  val
+                else:
+                    if item2[i][j] > item1[i][j]:
+                        item1[i][j] = item2[i][j]
+                    
+                    img[i][j] = 0 if item1[i][j] < 0 else 255 if item1[i][j] > 255 else item1[i][j]
+        return (item1, img)
+    except:
+        print("Error in overlay_image function")
+
+
+
 def non_max_supresn(arr, horizontal, vertical, mode):
     try:
         """
@@ -89,36 +153,6 @@ def threshold(canvas,min_value,max_value):
     except:
         print("Error in threshold function")
 
-def overlay_image(item1, item2, bg = False):
-    try:
-        """
-        This method used to overlays images based on gradient value.
-        Parameters
-        ----------
-        item1:array , Required
-    
-        item2:array, Required
-    
-        bg:boolean, Optional
-    
-        return tuple of item1 and image
-        """
-        img = item1.copy()
-        for i in range(len(item1)):
-            for j in range(len(item1[i])):
-                if not bg:
-                    val = math.sqrt(item1[i][j] ** 2 + item2[i][j] ** 2)
-                    item1[i][j] = val
-                    img[i][j] = 0 if val < 0 else 255 if val > 255 else  val
-                else:
-                    if item2[i][j] > item1[i][j]:
-                        item1[i][j] = item2[i][j]
-                    
-                    img[i][j] = 0 if item1[i][j] < 0 else 255 if item1[i][j] > 255 else item1[i][j]
-        return (item1, img)
-    except:
-        print("Error in overlay_image function")
-
 
 def hes_matrix(xxcord, yycord, xycord, yxcord, threshold):
     try:
@@ -176,35 +210,6 @@ def updated_arr(img):
     except:
         print("Error updated_arr in Function")
 
-def apply_filter(filter, arr):
-    try:
-        """
-        This method convolves an image with a given kernel.
-        Parameters
-        ----------
-        filter:array, Required
-    
-        arr: array, Required
-    
-        return tuple 
-        """
-    
-        canvas = updated_arr(arr)
-        img = updated_arr(arr)
-        for i in range(1, len(arr) - 1):
-            for j in range(1, len(arr[i]) - 1):
-                pos = 0
-                for rows in range(len(filter)):
-                    for columns in range(len(filter[rows])):
-                        x = rows - (len(filter) // 2)
-                        y = columns - (len(filter[rows]) // 2)
-                        pos += filter[rows][columns] * arr[i + x][j + y]
-                canvas[i][j] = pos
-    
-                img[i][j] = 0 if pos < 0 else  255 if pos > 255 else  pos
-        return (canvas, img)
-    except:
-        print("error in Apply_filter fn")
 
 def corners_to_list(corners):
     try:
@@ -410,56 +415,82 @@ def apply_hough(img, corners, angle = 180, radius = None, features = 4):
 
 if __name__ == "__main__":
 
-    gaussian = [[0.077847, 0.123317, 0.077847], 
-                [0.123317, 0.195346, 0.123317], 
-                [0.077847, 0.123317, 0.077847]]
-    horizontal_sobel = [[1, 2, 1], 
-               [0, 0, 0], 
-               [-1, -2, -1]]
-    vertical_sobel = [[1, 0, -1], 
-               [2, 0, -2], 
-               [1, 0, -1]]
+    try:
+        """Filtering variable and corrosponding values.
+        g: gaussian
+        h_sobel: Horizontal Sobel Filter values
+        v_sobel: Verticle Sobel Filter values
+        """
+        g = [[0.077847, 0.123317, 0.077847], 
+                    [0.123317, 0.195346, 0.123317], 
+                    [0.077847, 0.123317, 0.077847]]
+        h_sobel = [[1, 2, 1], 
+                [0, 0, 0], 
+                [-1, -2, -1]]
+        v_sobel = [[1, 0, -1], 
+                [2, 0, -2], 
+                [1, 0, -1]]
+        
+        img = cv2.imread("road.png", 0)
+        arr = updated_arr(img)
     
-    img = cv2.imread("road.png", 0)
-    arr = updated_arr(img)
+        gfilImg = apply_filter(g, arr)
+        h = apply_filter(h_sobel, gfilImg[0])  
+        v = apply_filter(v_sobel, gfilImg[0])
 
-    blurred = apply_filter(gaussian, arr)
-    cv2.imwrite("gaussian_filter_image.png", blurred[1])
-
-    h = apply_filter(horizontal_sobel, blurred[0])
-    cv2.imwrite("sobel_filter_horizontal.png", h[1])
-    v = apply_filter(vertical_sobel, blurred[0])
-    cv2.imwrite("sobel_filter_vertical.png", v[1])
-
-    edges = overlay_image(h[0], v[0])
-    cv2.imwrite("edges_with_no_supression.png", edges[1])
-    suppressed_edges = non_max_supresn(edges[0], h[0], v[0], "edges")
-    cv2.imwrite("edges_with_supression.png", suppressed_edges[1])
-    threshold_edges = threshold(suppressed_edges[0], 175, 60)
-    cv2.imwrite("edges_threshold.png", threshold_edges)
-
-    xxcord = apply_filter(horizontal_sobel, h[0])
-    yycord = apply_filter(vertical_sobel, v[0])
-    xycord = apply_filter(vertical_sobel, h[0])
-    yxcord = apply_filter(horizontal_sobel, v[0])
-
-
-    cv2.imwrite("xxcord.png", xxcord[1])
-    cv2.imwrite("yycord.png", yycord[1])
-    cv2.imwrite("xycord.png", xycord[1])
-    cv2.imwrite("yxcord.png", yxcord[1])
-    
-    hess = hes_matrix(xxcord[0], yycord[0], xycord[0], yxcord[0], 175000)
-    hess_threshold = non_max_supresn(hess[0], h[0], v[0], "corners")
-    cv2.imwrite("corners.png", hess[1])
-    cv2.imwrite("corners_threshold.png", hess_threshold[1])
-    updated_hess = overlay_image(hess_threshold[0], threshold_edges / 4, bg=True) 
-    cv2.imwrite("updated_corners.png", updated_hess[1])
-    colored = (updated_hess[1]).copy()
-    colored = cv2.cvtColor(updated_hess[1], cv2.COLOR_GRAY2RGB)
-    ransac_image = colored.copy()
-    ransac_image = apply_ransac(ransac_image, corners_to_list(hess_threshold[1]), it = 25)
-    cv2.imwrite("ransac.png", ransac_image)
-    HOUGH = colored.copy()
-    HOUGH = apply_hough(HOUGH, corners_to_list(hess_threshold[1]), angle=45)
-    cv2.imwrite("hough_image.png", HOUGH)
+        
+        """Apply flter for Horizontal and Vertical sobel
+        cord1_xx: for XX cordinates
+        cord1_yy: for YY cordinates
+        cord1_xy: for XY cordinates
+        cord1_yx: for YX cordinates
+        """
+        cord1_xx = apply_filter(h_sobel, h[0])
+        cord1_yy = apply_filter(v_sobel, v[0])
+        cord1_xy = apply_filter(v_sobel, h[0])
+        cord1_yx = apply_filter(h_sobel, v[0])
+        
+        edges = overlay_image(h[0], v[0])
+        suppress_edges = non_max_supresn(edges[0], h[0], v[0], "edges")
+        threshold_edges = threshold(suppress_edges[0], 175, 60)
+   
+        hess_matrix = hes_matrix(cord1_xx[0], cord1_yy[0], cord1_xy[0], cord1_yx[0], 175000)
+        hess_threshold = non_max_supresn(hess_matrix[0], h[0], v[0], "corners")
+        updated_hess_matrix = overlay_image(hess_threshold[0], threshold_edges / 4, bg=True) 
+        
+        colored = (updated_hess_matrix[1]).copy()
+        colored = cv2.cvtColor(updated_hess_matrix[1], cv2.COLOR_GRAY2RGB)
+        
+        """
+        Applying RANSAC 
+        """
+        ransac_image = colored.copy()
+        ransac_image = apply_ransac(ransac_image, corners_to_list(hess_threshold[1]), it = 25)
+        
+        """
+        Hough Transformation with the hess_threshold values
+        """
+        Hough_transform  = colored.copy()
+        Hough_transform  = apply_hough(Hough_transform, corners_to_list(hess_threshold[1]), angle=45)
+        
+        
+        """
+        Saving all output images
+        """
+        cv2.imwrite("gaussian_filter.png", gfilImg[1])
+        cv2.imwrite("h_sobel_filter.png", h[1])
+        cv2.imwrite("v_sobel_filter.png", v[1])
+        cv2.imwrite("cord1.png", cord1_xx[1])
+        cv2.imwrite("cord2.png", cord1_yy[1])
+        cv2.imwrite("cord3.png", cord1_xy[1])
+        cv2.imwrite("cord4.png", cord1_yx[1])
+        cv2.imwrite("edges_with_no_supress.png", edges[1])
+        cv2.imwrite("edges_with_supress.png", suppress_edges[1])
+        cv2.imwrite("edges_threshold.png", threshold_edges)
+        cv2.imwrite("corners.png", hess_matrix[1])
+        cv2.imwrite("corners_threshold.png", hess_threshold[1])
+        cv2.imwrite("updated_corners.png", updated_hess_matrix[1])
+        cv2.imwrite("ransac.png", ransac_image)
+        cv2.imwrite("hough_image.png", Hough_transform)
+    except:
+        print("Error n main Fn")
