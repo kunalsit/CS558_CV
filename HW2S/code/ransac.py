@@ -67,8 +67,9 @@ def ransac_algo(corners, threshold, inliers, it):
                     return [passes[j], used[j], endpoints[j]]
         winner = success.index(max(success))
         return [passes[winner] , used[winner], endpoints[winner]]
-    except:
+    except Exception as e:
         print("Error in ransac_algo function")
+        print(e)
 
 
 
@@ -109,5 +110,6 @@ def apply_ransac(img, corners, threshold = math.sqrt(3.84), inliers = 1000, feat
                         img[pt[0] + x][pt[1] + y] = color[i] if pt != winner[2][0] and pt != winner[2][1] else color[-1]
                 corners.remove(pt)
         return img
-    except:
+    except Exception as e:
         print("Error in apply_ransac function")
+        print(e)

@@ -44,8 +44,9 @@ def hough_transform(img, corners, angle, radius, features):
                             cordinates = cordinates[:k] + [[(r, j * math.pi / angle), hough[rbin][j]]] + cordinates[k:-1]
                         break
         return cordinates
-    except:
+    except Exception as e:
         print("Error in hough_transform function")
+        print(e)
 
 
 def apply_hough(img, corners, angle = 180, radius = None, features = 4):
@@ -76,5 +77,6 @@ def apply_hough(img, corners, angle = 180, radius = None, features = 4):
             pt2 = int((hough[i][0][0] - len(img[1])*math.cos(hough[i][0][1]))/math.sin(hough[i][0][1]))
             img = cv2.line(img, (0, pt1), (len(img[1]), pt2), (0, 0 , 255), 1)
         return img
-    except:
+    except Exception as e:
         print("Error in apply_hough function")
+        print(e)

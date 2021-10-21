@@ -29,8 +29,9 @@ def apply_filter(filter, arr):
     
                 img[i][j] = 0 if pos < 0 else  255 if pos > 255 else  pos
         return (canvas, img)
-    except:
+    except Exception as e:
         print("error in Apply_filter fn")
+        print(e)
 
 
 def overlay_image(item1, item2, bg = False):
@@ -60,8 +61,9 @@ def overlay_image(item1, item2, bg = False):
                     
                     img[i][j] = 0 if item1[i][j] < 0 else 255 if item1[i][j] > 255 else item1[i][j]
         return (item1, img)
-    except:
+    except Exception as e:
         print("Error in overlay_image function")
+        print(e)
 
 
 
@@ -121,8 +123,9 @@ def non_max_supresn(arr, horizontal, vertical, mode):
                 
                         
         return [canvas, img]
-    except:
+    except Exception as e:
         print("Error in non_max_supresn fn")
+        print(e)
 
 def threshold(canvas,min_value,max_value):
     try:
@@ -147,8 +150,9 @@ def threshold(canvas,min_value,max_value):
             for j in range(canvas_item_len):
                 canvas[i][j] = 0 if canvas[i][j] < min_value else  125 if canvas[i][j] < max_value else 255
         return canvas
-    except:
+    except Exception as e:
         print("Error in threshold function")
+        print(e)
 
 
 def hes_matrix(xxcord, yycord, xycord, yxcord, threshold):
@@ -184,8 +188,9 @@ def hes_matrix(xxcord, yycord, xycord, yxcord, threshold):
                     arr[i][j] = 0
                     img[i][j] = 0
         return [arr, img]
-    except:
+    except Exception as e:
         print("Error in hes_matrix fn")
+        print(e)
 
 def updated_arr(img):
     try:
@@ -226,5 +231,6 @@ def corners_to_list(corners):
                 if corners[i][j] > 0:
                     corners_list += [(i, j)]
         return corners_list
-    except:
+    except Exception as e:
         print("Error in Corner_to_list function")
+        print(e)
