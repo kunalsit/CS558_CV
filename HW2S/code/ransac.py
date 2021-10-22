@@ -3,7 +3,6 @@ import itertools
 import math
 import cv2
 
-
 def ransac_algo(corners, threshold, inliers, it):
     try:
         """
@@ -70,9 +69,6 @@ def ransac_algo(corners, threshold, inliers, it):
     except Exception as e:
         print("Error in ransac_algo function")
         print(e)
-
-
-
 
 def apply_ransac(img, corners, threshold = math.sqrt(3.84), inliers = 1000, features = 4, it = 17):
     try:

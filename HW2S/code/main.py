@@ -14,37 +14,40 @@ if __name__ == "__main__":
     try:
         """Filtering variable and corrosponding values.
         g: gaussian
-        h_sobel: Horizontal Sobel Filter values
-        v_sobel: Verticle Sobel Filter values
+        sobelFilHorizontal: Horizontal Sobel Filter values
+        sobelFilVerticle: Verticle Sobel Filter values
         """
         g = [[0.077847, 0.123317, 0.077847], 
                     [0.123317, 0.195346, 0.123317], 
                     [0.077847, 0.123317, 0.077847]]
-        h_sobel = [[1, 2, 1], 
-                [0, 0, 0], 
-                [-1, -2, -1]]
-        v_sobel = [[1, 0, -1], 
+        sobelFilHorizontal = [[1, 2, 1], 
+                              [0, 0, 0], 
+                              [-1, -2, -1]]
+        sobelFilVerticle = [[1, 0, -1], 
                 [2, 0, -2], 
                 [1, 0, -1]]
         
+        
+        # Get the image
         img = cv2.imread("road.png", 0)
         arr = filterop.updated_arr(img)
     
         gfilImg = filterop.apply_filter(g, arr)
-        h = filterop.apply_filter(h_sobel, gfilImg[0])  
-        v = filterop.apply_filter(v_sobel, gfilImg[0])
+        h = filterop.apply_filter(sobelFilHorizontal, gfilImg[0])  
+        v = filterop.apply_filter(sobelFilVerticle, gfilImg[0])
 
         
-        """Apply flter for Horizontal and Vertical sobel
+        """Apply filter for Horizontal and Vertical sobel
+           Get Key points in the image using a Hessian detector
         cord1_xx: for XX cordinates
         cord1_yy: for YY cordinates
         cord1_xy: for XY cordinates
         cord1_yx: for YX cordinates
         """
-        cord1_xx = filterop.apply_filter(h_sobel, h[0])
-        cord1_yy = filterop.apply_filter(v_sobel, v[0])
-        cord1_xy = filterop.apply_filter(v_sobel, h[0])
-        cord1_yx = filterop.apply_filter(h_sobel, v[0])
+        cord1_xx = filterop.apply_filter(sobelFilHorizontal, h[0])
+        cord1_yy = filterop.apply_filter(sobelFilVerticle, v[0])
+        cord1_xy = filterop.apply_filter(sobelFilVerticle, h[0])
+        cord1_yx = filterop.apply_filter(sobelFilHorizontal, v[0])
         
         edges = filterop.overlay_image(h[0], v[0])
         suppress_edges = filterop.non_max_supresn(edges[0], h[0], v[0], "edges")
@@ -59,6 +62,7 @@ if __name__ == "__main__":
         
         """
         Applying RANSAC 
+        Run the RANSAC algorithm on the key points to find the 4 best lines 
         """
         ransac_image = colored.copy()
         ransac_image = ransac.apply_ransac(ransac_image, filterop.corners_to_list(hess_threshold[1]), it = 25)
