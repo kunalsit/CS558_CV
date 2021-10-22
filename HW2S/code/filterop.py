@@ -15,7 +15,7 @@ def apply_filter(filter, arr):
         return tuple 
         """
     
-        canvas = updated_arr(arr)
+        ar = updated_arr(arr)
         img = updated_arr(arr)
         for i in range(1, len(arr) - 1):
             for j in range(1, len(arr[i]) - 1):
@@ -25,10 +25,10 @@ def apply_filter(filter, arr):
                         x = rows - (len(filter) // 2)
                         y = columns - (len(filter[rows]) // 2)
                         pos += filter[rows][columns] * arr[i + x][j + y]
-                canvas[i][j] = pos
+                ar[i][j] = pos
     
                 img[i][j] = 0 if pos < 0 else  255 if pos > 255 else  pos
-        return (canvas, img)
+        return (ar, img)
     except Exception as e:
         print("error in Apply_filter fn")
         print(e)
@@ -65,9 +65,7 @@ def overlay_image(item1, item2, bg = False):
         print("Error in overlay_image function")
         print(e)
 
-
-
-def non_max_supresn(arr, horizontal, vertical, mode):
+def sup_nm(arr, h, v, mode):
     try:
         """
         This method supresses pixel intensities based on the neighborhood pixel, 
@@ -76,58 +74,58 @@ def non_max_supresn(arr, horizontal, vertical, mode):
         ----------
         arr: array, Required
     
-        horizontal:array, Required
+        h:array, Required
     
-        vertical:array, Required
+        v:array, Required
     
         mode : str , Required
     
         return list
         """
     
-        canvas = arr.copy()
+        ar = arr.copy()
         img = arr.copy()
         for i in range(len(arr)):
             for j in range(len(arr[i])):
                 if mode == "edges":
-                    angle = math.atan2(vertical[i][j], horizontal[i][j]) 
-                    canvas[i][j] = arr[i][j]
+                    angle = math.atan2(v[i][j], h[i][j]) 
+                    ar[i][j] = arr[i][j]
                     if i == 0 or j == 0 or i == len(arr) - 1  or j == len(arr[i]) - 1:
-                        canvas[i][j] = 0
+                        ar[i][j] = 0
                     elif (angle >=  -1*math.pi/8 and angle <= math.pi / 8) or (angle > 7*math.pi/8 and angle <= -7*math.pi/8):
                         if arr[i][j] <= arr[i][j+1] or arr[i][j] <= arr[i][j-1]:
-                            canvas[i][j] = 0
+                            ar[i][j] = 0
                     elif (angle < -1*math.pi/8 and angle >= -3*math.pi/8) or (angle > math.pi/8 and angle <= 3*math.pi/8):
                         if arr[i][j] <= arr[i+1][j+1] or arr[i][j] <= arr[i-1][j-1]:
-                            canvas[i][j] = 0
+                            ar[i][j] = 0
                     elif (angle < -3*math.pi/8 and angle >= -5*math.pi/8) or (angle > 3*math.pi/8 and angle <= 5*math.pi/8):
                         if arr[i][j] <= arr[i+1][j] or arr[i][j] <= arr[i-1][j]:
-                            canvas[i][j] = 0
+                            ar[i][j] = 0
                     elif (angle < -5*math.pi/8 and angle >= -7*math.pi/8) or (angle > 5*math.pi/8 and angle <= 7*math.pi/8):
                         if arr[i][j] <= arr[i+1][j-1] or arr[i][j] <= arr[i-1][j+1]:
-                            canvas[i][j] = 0
+                            ar[i][j] = 0
                     else:
-                        canvas[i][j] = 0 
+                        ar[i][j] = 0 
                     
                     
-                    img[i][j] = 0 if canvas[i][j] < 0 else 255 if canvas[i][j] > 255 else canvas[i][j]
+                    img[i][j] = 0 if ar[i][j] < 0 else 255 if ar[i][j] > 255 else ar[i][j]
                         
                 elif mode == "corners":
-                    canvas[i][j] = arr[i][j]
+                    ar[i][j] = arr[i][j]
                     if (i == 0 or j == 0 or i == len(arr) - 1 or j == len(arr[i]) - 1):
-                        canvas[i][j] = 0
+                        ar[i][j] = 0
                     elif not (arr[i][j] > arr[i+1][j+1] and arr[i][j] > arr[i-1][j-1] and arr[i][j] > arr[i+1][j-1] and arr[i][j] > arr[i-1][j+1] and arr[i][j] > arr[i][j+1] and arr[i][j] > arr[i][j-1] and arr[i][j] > arr[i+1][j] and arr[i][j] > arr[i-1][j]):
-                        canvas[i][j] = 0
+                        ar[i][j] = 0
     
-                    img[i][j] = 0 if canvas[i][j] < 0 else  255 if canvas[i][j] > 255 else  canvas[i][j]
+                    img[i][j] = 0 if ar[i][j] < 0 else  255 if ar[i][j] > 255 else  ar[i][j]
                 
                         
-        return [canvas, img]
+        return [ar, img]
     except Exception as e:
-        print("Error in non_max_supresn fn")
+        print("Error in sup_nm fn")
         print(e)
 
-def threshold(canvas,min_value,max_value):
+def threshold(ar,min_value,max_value):
     try:
         
         """
@@ -136,20 +134,20 @@ def threshold(canvas,min_value,max_value):
             
         Parameters
         ----------
-        canvas: , Required
+        ar: , Required
     
         min_value:int, Required
     
         max_value:int, Required
     
-        return canvas
+        return ar
         """
-        canvas_len=len(canvas)
+        canvas_len=len(ar)
         for i in range(canvas_len):
-            canvas_item_len=len(canvas[i])
-            for j in range(canvas_item_len):
-                canvas[i][j] = 0 if canvas[i][j] < min_value else  125 if canvas[i][j] < max_value else 255
-        return canvas
+            ar_item_len=len(ar[i])
+            for j in range(ar_item_len):
+                ar[i][j] = 0 if ar[i][j] < min_value else  125 if ar[i][j] < max_value else 255
+        return ar
     except Exception as e:
         print("Error in threshold function")
         print(e)

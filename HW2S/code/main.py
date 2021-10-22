@@ -1,3 +1,10 @@
+"""
+Name: Kunal Goyal
+CS558
+Computer Vision
+"""
+
+
 import numpy as np
 import random
 import itertools
@@ -50,11 +57,11 @@ if __name__ == "__main__":
         cord1_yx = filterop.apply_filter(sobelFilHorizontal, v[0])
         
         edges = filterop.overlay_image(h[0], v[0])
-        suppress_edges = filterop.non_max_supresn(edges[0], h[0], v[0], "edges")
+        suppress_edges = filterop.sup_nm(edges[0], h[0], v[0], "edges")
         threshold_edges = filterop.threshold(suppress_edges[0], 175, 60)
    
         hess_matrix = filterop.hes_matrix(cord1_xx[0], cord1_yy[0], cord1_xy[0], cord1_yx[0], 175000)
-        hess_threshold = filterop.non_max_supresn(hess_matrix[0], h[0], v[0], "corners")
+        hess_threshold = filterop.sup_nm(hess_matrix[0], h[0], v[0], "corners")
         updated_hess_matrix = filterop.overlay_image(hess_threshold[0], threshold_edges / 4, bg=True) 
         
         colored = (updated_hess_matrix[1]).copy()
@@ -65,7 +72,7 @@ if __name__ == "__main__":
         Run the RANSAC algorithm on the key points to find the 4 best lines 
         """
         ransac_image = colored.copy()
-        ransac_image = ransac.apply_ransac(ransac_image, filterop.corners_to_list(hess_threshold[1]), it = 25)
+        ransac_image = ransac.apply_algo(ransac_image, filterop.corners_to_list(hess_threshold[1]), itr = 20)
         
         """
         Hough Transformation with the hess_threshold values

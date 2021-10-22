@@ -3,7 +3,7 @@ import itertools
 import math
 import cv2
 
-def ransac_algo(corners, threshold, inliers, it):
+def ransac_algo(corners, threshold, inliers, itr):
     try:
         """
         This methods uses the RANSAC algorithm on set of points of image.
@@ -16,7 +16,7 @@ def ransac_algo(corners, threshold, inliers, it):
     
         inliers: Required
     
-        it: int, Required
+        itr: int, Required
     
         Return list of list
         """
@@ -26,7 +26,7 @@ def ransac_algo(corners, threshold, inliers, it):
         success = []
         used = []
         endpoints = []
-        for i in range(it):
+        for i in range(itr):
             maxpts += [[0, 0]]
             passes += [[(0, 0)]]
             success += [0]
@@ -70,10 +70,10 @@ def ransac_algo(corners, threshold, inliers, it):
         print("Error in ransac_algo function")
         print(e)
 
-def apply_ransac(img, corners, threshold = math.sqrt(3.84), inliers = 1000, features = 4, it = 17):
+def apply_algo(img, corners, threshold = math.sqrt(3.84), inliers = 1000, feat = 4, itr = 17):
     try:
         """
-        This methods apply the RANSAC algorithm on an image as per iteration value(it parameter) ,
+        This methods apply the RANSAC algorithm on an image as per iteration value(itr parameter) ,
         and creates an image.
     
         Parameters
@@ -86,16 +86,16 @@ def apply_ransac(img, corners, threshold = math.sqrt(3.84), inliers = 1000, feat
     
         inliers: int, Optional
         
-        features: int, Optional
+        feat: int, Optional
         
-        it: int, Optional
+        itr: int, Optional
         
         Return array
         """
         colors = list(itertools.product([0, 255], repeat = 3))
-        color = random.sample(colors[1:-1], features + 1)
-        for i in range(features):
-            winner = ransac_algo(corners, threshold, inliers, it)
+        color = random.sample(colors[1:-1], feat + 1)
+        for i in range(feat):
+            winner = ransac_algo(corners, threshold, inliers, itr)
             img = cv2.line(img, (winner[0][0])[::-1], (winner[0][1])[::-1], color[i], 1)
             for j in range(len(winner[1])): 
                 pt = winner[1][j]
@@ -107,5 +107,5 @@ def apply_ransac(img, corners, threshold = math.sqrt(3.84), inliers = 1000, feat
                 corners.remove(pt)
         return img
     except Exception as e:
-        print("Error in apply_ransac function")
+        print("Error in apply_algo function")
         print(e)
